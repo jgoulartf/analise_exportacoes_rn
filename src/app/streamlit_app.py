@@ -52,3 +52,5 @@ else:
         st.altair_chart(chart, use_container_width=True)
     else:
         st.warning("Nenhum dado encontrado para o intervalo de anos selecionado.")
+
+
