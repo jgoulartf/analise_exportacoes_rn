@@ -1,13 +1,20 @@
+import os
 import streamlit as st
 import pandas as pd
 import altair as alt
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Carregar a planilha
-file_path = './dataset_relevancias.xlsx'
+file_path = 'src/app/dataset_relevancias.xlsx'
 data = pd.read_excel(file_path)
 
+# Carregar o arquivo Excel para HeatMap
+file_path_heat = 'src/app/dataset_relevancias_por_ano.xlsx'
+data_heat = pd.read_excel(file_path_heat)
+
 # Filtrar colunas para garantir que temos as necessárias
-st.title("Visualização de Relevância dos Produtos por Ano")
+st.title("Relevância dos Produtos ao Longo dos Anos")
 
 coluna_filtro = 'Descrição SH6'
 # Selecionar a coluna 'sh6' e o valor de relevância ao longo dos anos
@@ -53,4 +60,29 @@ else:
     else:
         st.warning("Nenhum dado encontrado para o intervalo de anos selecionado.")
 
+
+
+
+# Filtrar colunas para garantir que temos as necessárias
+st.title("Mapa de calor da relevância dos produtos ao longo dos anos")
+# Criando o Mapa de Calor
+
+# Carregar o dataset e limpar os dados como feito anteriormente
+data_heat.columns = ["Produto", "Código SH6", "Descrição"] + list(range(1997, 2025))
+data_heat_cleaned = data_heat.drop(columns=["Produto", "Descrição"]).set_index("Código SH6")
+
+# Preencher valores ausentes com zero
+data_heat_cleaned_filled = data_heat_cleaned.fillna(0)
+print(data_heat_cleaned_filled.head())
+
+# Gerar o mapa de calor com o índice de Código SH6 no eixo y
+plt.figure(figsize=(21, 21))
+sns.heatmap(data_heat_cleaned_filled, cmap="Oranges", cbar_kws={'label': 'Relevância'}, annot=False)
+
+# Título e rótulos dos eixos
+plt.title("Mapa de Calor das Relevâncias por Ano")
+plt.xlabel("Ano")
+plt.ylabel("Código SH6")
+
+st.pyplot(plt)
 
